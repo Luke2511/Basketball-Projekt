@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketballspiel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 40px;
+        }
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            margin: 0 1em;
+            text-decoration: none;
+        }
+        header {
+            background-color: #f4f4f4;
+            padding: 2em 1em;
+            text-align: center;
+        }
+        main {
+            padding: 2em 1em;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 0.3em;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: rgba(173, 216, 230, 0.5);
+        }
+        .innerBox {
+            margin-left: 2vw;
+        }
+        .outerBox {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        #firstInnerBox {
+            margin-left: 0px;
+        }
+
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="#Bild vom Projekt">Bild vom Projekt</a>
+    <a href="#Scoretabelle">Scoretabelle</a>
+    <a href="#Über uns">Über uns</a>
+    <a href="#contact">Kontakt</a>
+</nav>
+
+<header>
+    <h1>Herzlich Willkommen beim unserem Basketballspiel!</h1>
+    <p>Wir freuen uns, Sie hier begrüßen zu dürfen.</p>
+</header>
+
+<main>
+    <section id="Bild vom Projekt">
+        <h2>Bild vom Projekt</h2>
+        <p>Dies ist die Startseite unserer Webseite.</p>
+        <img src="Basketball.jpg" alt="Haris" width="300" height="300" />
+    </section>
+
+    <section id="Scoretabelle">
+        <h2>Scoretabelle</h2>
+        <p>Anbei gibt es die Scoretabelle der besten 10 Scores :</p>
+        <div id="csvTable"></div>
+        
+    </section>
+
+    <section id="über uns">
+        <h2>Über uns</h2>
+        <p>Wir sind ein engagiertes Team von Basketballenthusiasten.</p>
+    </section>
+
+    <section id="contact">
+        <h1>Kontakt</h1>
+        <h2>Teammitglieder:</h2>
+        <div class="outerBox">
+            <div class="innerBox" id="firstInnerBox">
+                <p>Haris Kalac</p>    
+                <img src="Haris.jpg" alt="Haris" width="200" height="200" />
+            </div>
+            <div class="innerBox">
+                <p>Luke Leuchtenmüller</p>  
+                <img src="Luke.jpg" alt="Luke" width="200" height="200" />
+            </div>
+            <div class="innerBox">
+                <p>Janek Schneider</p>
+                <img src="Janek.jpg" alt="Janek" width="200" height="200" />
+            </div>
+            <div class="innerBox">
+                <p>Paul Rasmus</p>
+                <img src="Paul.jpg" alt="Paul" width="200" height="200" />
+            </div>
+        
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2024 Ihr Unternehmen. Alle Rechte vorbehalten.</p>
+</footer>
+
+<script>
+    const reloadPage = () => {
+        window.location.reload();
+    }
+    const reloadTimeInMS = 30000;
+
+    // Funktion zum Einlesen der CSV-Datei
+    function loadCSV() {
+        fetch('results.csv')
+            .then(response => response.text())
+            .then(text => {
+                displayCSV(text);
+            })
+            .then(() => setTimeout(reloadPage, reloadTimeInMS))
+            .catch(error => console.error('Error loading the CSV file:', error));
+    }
+
+    // Funktion zum Anzeigen der CSV-Daten als HTML-Tabelle
+    function displayCSV(text) {
+        const lines = text.split('\n'); // Zeilen der CSV-Datei trennen
+        let rows = [];
+
+        // CSV in ein Array von Objekten umwandeln (jedes Objekt eine Zeile)
+        for (let indexOfLine = 1; indexOfLine < lines.length; indexOfLine++) {
+            const cells = lines[indexOfLine].split(';'); // Semikolon als Trennzeichen
+            const name = cells[0].trim(); // Name in der ersten Spalte
+            const score = parseFloat(cells[1]) || 0; // Score in der zweiten Spalte, als Zahl konvertieren
+            rows.push({ name, score });
+        }
+
+        // Sortieren der Daten nach dem Score in absteigender Reihenfolge
+        rows.sort((a, b) => b.score - a.score);
+
+        // Nur die ersten 10 Zeilen auswählen
+        rows = rows.slice(0, 10);
+
+        // HTML-Tabelle generieren
+        let html = '<table>';
+        html += '<tr><th>Name</th><th>Score</th></tr>'; // Tabellen-Header
+
+        // Datenzeilen hinzufügen
+        rows.forEach(row => {
+            html += `<tr><td>${row.name}</td><td>${row.score}</td></tr>`;
+        });
+
+        html += '</table>';
+        document.getElementById('csvTable').innerHTML = html;
+    }
+
+    // CSV-Datei laden, wenn die Seite geladen ist
+    window.onload = loadCSV;
+</script>
+
+
+
+</body>
+</html>
